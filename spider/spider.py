@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+import json
+import codecs
+import uvloop
 import asyncio
 import aiohttp
-# import async_timeout
-import uvloop
 from motor.motor_asyncio import AsyncIOMotorClient
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -11,25 +12,17 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 async def fetch(session, url):
     async with session.get(url) as response:
         print(url, ':response:', response.status)
-        text = await response.text()
-        return dict(url=url, response_text=text)
+        return {'url': url, 'content': await response.text()}
+
+
+def prepare_urls(path='sites.json'):
+    with codecs.open(path, 'rb+', 'utf-8') as rf:
+        return json.load(rf)
 
 
 class CrawlingTask(object):
-    def __init__(self, interval=60, database=None):
-        self.urls = [
-            'http://liqi.io/feed/',
-            'http://cnc.dm5.com/rss-kongbuqishi/',
-            'https://sspai.com/feed',
-            'https://www.leiphone.com/feed/',
-            'http://www.dm5.com/rss-gywzshcwslmnjs/',
-            'http://www.dm5.com/rss-jiroushaonv-eling-nengjuduoshaogongjin/',
-            'https://sdk.cn/site/rss-content',
-            'https://www.appinn.com/feed/',
-            'http://feed.iplaysoft.com/',
-            'https://imququ.com/feed',
-            'http://cizixs.com/feed.xml',
-        ]
+    def __init__(self, targets=None, interval=60, database=None):
+        self.targets = targets if targets else list()
         self.result = list()
         self.interval = interval
         self.database = database
@@ -55,14 +48,14 @@ class CrawlingTask(object):
     async def do_crawl(self):
         with aiohttp.ClientSession() as s:
             done, pending = await asyncio.wait([
-                fetch(s, url)
-                for url in self.urls
+                fetch(s, target)
+                for target in self.targets
             ])
         self.result = [future.result() for future in done]
 
     async def do_save(self):
         if not self.result: return
-        await self.database['article'].insert_many(self.result)
+        await self.database['feed'].insert_many(self.result)
         self.result = list()
 
     def ensure_future(self, loop):
@@ -71,10 +64,10 @@ class CrawlingTask(object):
 
 
 if __name__ == '__main__':
-    urls = list()
-    loop = asyncio.get_event_loop()
+    urls = prepare_urls()
     db = AsyncIOMotorClient('localhost', 27017)['rss']
-    t = CrawlingTask(30, db)
+    loop = asyncio.get_event_loop()
+    t = CrawlingTask(urls, 7200, db)
     t.ensure_future(loop=loop)
     loop.run_forever()
     loop.close()

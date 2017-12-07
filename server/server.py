@@ -89,8 +89,17 @@ schema = GraphQLSchema(
     )
 )
 
+
+async def enable_cors(_request, response):
+    response.headers['Access-Control-Allow-Headers'] = 'content-type'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    response.headers['Access-Control-Max-Age'] = '86400'
+
+
 app = web.Application()
 
+app.on_response_prepare.append(enable_cors)
 GraphQLView.attach(
     app,
     schema=schema,

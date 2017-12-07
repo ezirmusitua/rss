@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo-client": "~1.4.0",
     "react": "^16.2.0",
+    "react-apollo": "1.4.15",
     "react-dom": "^16.2.0",
     "react-scripts-ts": "2.8.0"
   },

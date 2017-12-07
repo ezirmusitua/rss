@@ -26,7 +26,7 @@ class Article(object):
         result = dict()
         result['title'] = content['title']
         result['link'] = content['link']
-        result['hash'] = hashlib.md5(content['link'].encode()).hexdigest()
+        result['hash'] = hashlib.md5((content['link'] + content['title']).encode()).hexdigest()
         result['publish_at'] = datetime.datetime(*content['published_parsed'][:7]).timestamp()
         _content, summary = content.get('content', None), content.get('summary', None)
 
@@ -41,6 +41,7 @@ class Article(object):
         else:
             result['description'] = content['summary']
             result['content'] = content['content'][0]['value']
+        result['has_read'] = False
         return result
 
 

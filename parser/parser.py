@@ -64,7 +64,6 @@ async def main(db, interval=60):
             db['article'].find_one_and_update(article.exists_query, {'$set': article.json}, upsert=True)
             for article in to_save
         ])
-        print({'$in': list(map(lambda x: x['_id'], sources))})
         await db['feed'].remove({'_id': {'$in': list(map(lambda x: x['_id'], sources))}})
         await asyncio.sleep(interval)
 

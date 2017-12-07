@@ -1,0 +1,75 @@
+.app {
+    position: relative;
+}
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    height: 120px;
+    background-color: rgba(178, 169, 151, 0.87);
+    padding-left: 80px;
+    box-sizing: border-box;
+}
+
+.app-header h2 {
+    margin: 0;
+    color: white;
+    font-size: 64px;
+}
+
+.articles-container {
+    margin-top: 120px;
+    height: calc(100vh - 120px);
+    overflow-y: scroll;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    padding: 24px 0;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, rgb(229, 255, 240), rgba(229, 255, 240, 0.5), rgba(229, 255, 240, 0.12), white);
+}
+
+.articles-container__list-container {
+    width: 960px;
+}
+
+.articles-container__list-item {
+    padding: 20px 36px 32px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 8px 2px rgba(0, 0, 0, .12);
+    margin-bottom: 16px;
+    background-color: rgba(178, 169, 151, 0.56);;
+}
+
+.articles-container__list-item > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.articles-container__list-item > div:first-child p {
+    font-size: 18px;
+    margin: 0;
+}
+
+.articles-container__list-item > div:first-child span {
+    font-size: 12px;
+    margin: 0;
+}
+
+.article-item__content, .articles-container p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.app-intro {
+    font-size: large;
+}

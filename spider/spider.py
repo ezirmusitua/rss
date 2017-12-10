@@ -13,14 +13,15 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 async def fetch(loop, session, url):
     try:
         with async_timeout.timeout(5):
+            print('fetching ', url)
             async with session.get(url) as response:
-                return {'url': url, 'content': await response.text()}
+                return {'url': url, 'content': await response.text(encoding='utf-8')}
     except Exception as e:
         loop.call_exception_handler({
-            'message': 'Exception happened while fetching {} with timeout {}'.format(url, 10),
+            'message': 'What Exception?',
             'exception': e
         })
-        return {'url': url, 'content': ''}
+    return None
 
 
 def prepare_urls(path='sites.json'):
@@ -62,7 +63,7 @@ class CrawlingTask(object):
                 fetch(self.loop, s, target)
                 for target in self.targets
             ])
-        self.result = [future.result() for future in done]
+        self.result = list(filter(lambda r: r is not None, [future.result() for future in done]))
 
     async def do_save(self):
         if not self.result: return
@@ -79,8 +80,9 @@ def handle_async_exception(_loop, ctx):
 
 
 if __name__ == '__main__':
+    print('Ready to crawling ... ')
     urls = prepare_urls()
-    db = AsyncIOMotorClient('mongodb://localhost:27017')['rss']
+    db = AsyncIOMotorClient('mongodb://localhost:27017/rss')['rss']
     loop = asyncio.get_event_loop()
     loop.set_exception_handler(handle_async_exception)
     t = CrawlingTask(loop, urls, 7200, db)

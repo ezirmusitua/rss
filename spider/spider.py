@@ -85,7 +85,7 @@ if __name__ == '__main__':
     db = AsyncIOMotorClient('mongodb://localhost:27017/rss')['rss']
     loop = asyncio.get_event_loop()
     loop.set_exception_handler(handle_async_exception)
-    t = CrawlingTask(loop, urls, 7200, db)
+    t = CrawlingTask(loop, urls, 3600, db)
     t.ensure_future()
     loop.run_forever()
     loop.close()

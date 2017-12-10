@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+import argparse
 import json
 import codecs
-import uvloop
+# import uvloop
 import asyncio
 import aiohttp
 import async_timeout
 from motor.motor_asyncio import AsyncIOMotorClient
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 async def fetch(loop, session, url):
@@ -80,9 +81,14 @@ def handle_async_exception(_loop, ctx):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mongo', metavar='mongo', type=str, nargs='*', help='mongo db uri',
+                        default=['mongodb://localhost:27017/rss'])
+    args = parser.parse_args()
+    mongo_uri = args.mongo[0]
     print('Ready to crawling ... ')
     urls = prepare_urls()
-    db = AsyncIOMotorClient('mongodb://localhost:27017/rss')['rss']
+    db = AsyncIOMotorClient(mongo_uri)['rss']
     loop = asyncio.get_event_loop()
     loop.set_exception_handler(handle_async_exception)
     t = CrawlingTask(loop, urls, 3600, db)

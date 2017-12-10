@@ -121,3 +121,4 @@ pip-selfcheck.json
 .idea
 node_modules
 /web/node_modules/
+**.prod.**

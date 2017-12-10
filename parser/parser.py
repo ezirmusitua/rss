@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+import argparse
 import hashlib
 import datetime
-import uvloop
+# import uvloop
 import asyncio
 from feedparser import parse as parse_feed
 from motor.motor_asyncio import AsyncIOMotorClient
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 class Article(object):
@@ -79,7 +80,12 @@ async def main(db, interval=60):
 
 
 if __name__ == '__main__':
-    db = AsyncIOMotorClient('mongodb://localhost:27017/rss')['rss']
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mongo', metavar='mongo', type=str, nargs='*', help='mongo db uri',
+                        default=['mongodb://localhost:27017/rss'])
+    args = parser.parse_args()
+    mongo_uri = args.mongo[0]
+    db = AsyncIOMotorClient(mongo_uri)['rss']
     loop = asyncio.get_event_loop()
     asyncio.ensure_future(main(db, 3600))
     loop.run_forever()

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import argparse
 from collections import namedtuple
 from aiohttp import web
 from graphql import (
@@ -14,7 +15,13 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 from aiohttp_graphql import GraphQLView
 from motor.motor_asyncio import AsyncIOMotorClient
 
-article_collection = AsyncIOMotorClient('mongodb://localhost:27017')['rss']['article']
+parser = argparse.ArgumentParser()
+parser.add_argument('mongo', metavar='mongo', type=str, nargs='*', help='mongo db uri',
+                    default=['mongodb://localhost:27017/rss'])
+args = parser.parse_args()
+mongo_uri = args.mongo[0]
+
+article_collection = AsyncIOMotorClient(mongo_uri)['rss']['article']
 
 Article = namedtuple('Article', 'title link hash publish_at description content')
 
@@ -100,6 +107,7 @@ async def enable_cors(_request, response):
 app = web.Application()
 
 app.on_response_prepare.append(enable_cors)
+
 GraphQLView.attach(
     app,
     schema=schema,

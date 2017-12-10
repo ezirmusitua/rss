@@ -12,3 +12,5 @@ Targets:
 9. http://feed.iplaysoft.com/
 10. https://imququ.com/feed
 11. http://cizixs.com/feed.xml
+
+**ARG Not working in Dockerfile, Use ENV instead**

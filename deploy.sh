@@ -18,9 +18,9 @@ ssh-add ~/.ssh/vultr_rsa
 ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project && rm -rf rss && rm rss-deploy.tar.gz && mkdir -p path/to/project/rss"
 scp rss-deploy.tar.gz -P remote_ssh_port remote_user@remote_host:path/to/project
 ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/ && tar -xzf rss-deploy.tar.gz"
-ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/rss && sudo docker build -t rss_parser --build-arg MONGO_URI='remote_mongo_uri' parser"
-ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/rss && sudo docker build -t rss_spider --build-arg MONGO_URI='remote_mongo_uri' spider"
-ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/rss && sudo docker build -t rss_server --build-arg MONGO_URI='remote_mongo_uri' server"
+ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/rss && sudo docker build -t rss_parser parser"
+ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/rss && sudo docker build -t rss_spider spider"
+ssh -p remote_ssh_port remote_user@remote_host "cd path/to/project/rss && sudo docker build -t rss_server server"
 
 ## stop containers
 ssh -p remote_ssh_port remote_user@remote_host "sudo docker stop rss_parser && sudo docker rm rss_parser"  
@@ -33,7 +33,7 @@ ssh -p remote_ssh_port remote_user@remote_host "sudo docker run --net host --nam
 # run parser
 ssh -p remote_ssh_port remote_user@remote_host "sudo docker run --net host --name rss_parser -d rss_parser"
 # run server
-ssh -p remote_ssh_port remote_user@remote_host "sudo docker run --net host --name rss_server -d rss_server"
+ssh -p remote_ssh_port remote_user@remote_host "sudo docker run -p 3081:3081 --net host --name rss_server -d rss_server"
 # run web
 ssh -p remote_ssh_port remote_user@remote_host "sudo docker run -d -p 80:80 --net host --name rss_reader \
 -v /abs/path/to/rss/web/build:/usr/share/nginx/html \

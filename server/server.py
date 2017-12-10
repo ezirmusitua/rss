@@ -14,9 +14,9 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 from aiohttp_graphql import GraphQLView
 from motor.motor_asyncio import AsyncIOMotorClient
 
-Article = namedtuple('Article', 'title link hash publish_at description content')
+article_collection = AsyncIOMotorClient('mongodb://localhost:27017')['rss']['article']
 
-article_collection = AsyncIOMotorClient('localhost', 27017)['rss']['article']
+Article = namedtuple('Article', 'title link hash publish_at description content')
 
 ArticleType = GraphQLObjectType(
     name='article',
@@ -92,8 +92,8 @@ schema = GraphQLSchema(
 
 async def enable_cors(_request, response):
     response.headers['Access-Control-Allow-Headers'] = 'content-type'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost'
     response.headers['Access-Control-Max-Age'] = '86400'
 
 

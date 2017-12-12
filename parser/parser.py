@@ -59,6 +59,7 @@ class Article(object):
             content_text = html2text_handler.handle(content['content'][0]['value'])
             result['description'] = summary_text[:200]
             result['content'] = content_text
+            result['content_raw'] = content['content'][0]['value']
         result['has_read'] = False
         return result
 

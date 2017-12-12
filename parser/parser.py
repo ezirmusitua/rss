@@ -6,8 +6,15 @@ import datetime
 import asyncio
 from feedparser import parse as parse_feed
 from motor.motor_asyncio import AsyncIOMotorClient
+from html2text import HTML2Text
 
 # asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+html2text_handler = HTML2Text()
+html2text_handler.ignore_emphasis = True
+html2text_handler.ignore_images = True
+html2text_handler.ignore_links = True
+html2text_handler.ignore_tables = True
 
 
 class Article(object):
@@ -38,14 +45,20 @@ class Article(object):
         if not _content and not summary:
             result['description'] = result['content'] = ''
         elif not _content:
-            result['description'] = content['summary'][:500]
-            result['content'] = content['summary']
+            summary_text = html2text_handler.handle(content['summary'])
+            result['description'] = summary_text[:200]
+            result['content'] = summary_text
+            result['content_raw'] = content['summary']
         elif not summary:
-            result['description'] = content['content'][0]['value'][:500]
-            result['content'] = content['content'][0]['value']
+            content_text = html2text_handler.handle(content['content'][0]['value'])
+            result['description'] = content_text[:200]
+            result['content'] = content_text
+            result['content_raw'] = content['content'][0]['value']
         else:
-            result['description'] = content['summary']
-            result['content'] = content['content'][0]['value']
+            summary_text = html2text_handler.handle(content['summary'])
+            content_text = html2text_handler.handle(content['content'][0]['value'])
+            result['description'] = summary_text[:200]
+            result['content'] = content_text
         result['has_read'] = False
         return result
 
